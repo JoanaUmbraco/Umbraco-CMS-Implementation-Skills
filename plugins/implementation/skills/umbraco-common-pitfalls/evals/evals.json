@@ -38,7 +38,7 @@
         "The agent explicitly states that injecting `IContentService` (or any write-capable service) in a Razor view is an anti-pattern",
         "The agent explains that IContentService goes directly to the database and bypasses Umbraco's published content cache",
         "The agent provides the correct alternative: `Umbraco.Content(id)` via `UmbracoHelper`, which reads from the in-memory cache",
-        "The agent mentions that read-only APIs safe in views include `UmbracoHelper`, `ITagQuery`, and `IMemberManager`",
+        "The agent distinguishes cache-backed, read-only APIs that are appropriate in views (such as `UmbracoHelper`) from Services-layer APIs that are not",
         "The agent does not suggest IContentService as acceptable even with a caveat such as 'just be careful' or 'only for read operations'",
         "If no buildable project is available, the agent does not claim the corrected view snippet has been compiled or run"
       ]

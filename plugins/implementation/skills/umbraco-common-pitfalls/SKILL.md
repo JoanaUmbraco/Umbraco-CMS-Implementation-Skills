@@ -14,265 +14,86 @@ description: >
 
 # Common Pitfalls & Anti-Patterns
 
-The patterns below cover the most impactful mistakes in Umbraco development — issues that cause
-memory leaks, instability, N+1 queries, and poor performance. When reviewing or writing Umbraco
-code, check each applicable pitfall and apply the fix before claiming correctness. Source of
-truth: [official Umbraco docs](https://docs.umbraco.com/umbraco-cms/develop-with-umbraco/application-code/common-pitfalls.md).
-
----
-
-### 1. Singletons and statics
-
-Umbraco provides DI everywhere. Static fields and Service Locator calls make code untestable,
-create API leakage, and introduce lifetime mismatches. Use constructor injection instead — all
-Umbraco controllers, composers, notification handlers, and Razor base classes support it.
-
----
-
-### 2. Static references to request-scoped instances
-
-`UmbracoHelper` and `UmbracoContext` are **request-scoped**: they live for one HTTP request.
-Storing them in a static or singleton field traps a request's cache snapshot and user security
-context in application memory — causing memory leaks and cross-request data bleed.
-
-**Bad:**
-```csharp
-public class BadApiController : Controller
-{
-    private static UmbracoHelper _umbracoHelper; // static + request-scoped = leak
-
-    public BadApiController(IUmbracoHelperAccessor accessor)
-    {
-        if (_umbracoHelper is null)
-        {
-            accessor.TryGetUmbracoHelper(out var helper);
-            _umbracoHelper = helper;
-        }
-    }
-}
-```
-
-**Good:** inject `IUmbracoHelperAccessor` and resolve per-request, or inject `UmbracoHelper`
-directly (it is registered as request-scoped in DI and is safe when consumed that way).
-
----
-
-### 3. DescendantsOrSelf() on large trees
-
-`DescendantsOrSelf()` iterates **every node** in the subtree. On a 10,000-node site, using it
-to build a nav menu iterates all 10,000 nodes even when only level-2 children are needed.
-
-**Bad:**
-```cshtml
-@foreach (var node in Model.Root().DescendantsOrSelf().Where(x => x.Level == 2))
-```
-
-**Good:**
-```cshtml
-@foreach (var node in Model.Root().Children())
-```
-
-Use `DescendantsOrSelf()` only when the subtree is provably small and filtering at depth is
-genuinely required.
-
----
-
-### 4. Over-querying (repeated traversals)
-
-Every `.Root()`, `.Ancestor()`, or property resolution is a cache traversal. Calling
-`Model.Root()` three times traverses upward three times.
-
-**Bad:**
-```cshtml
-<a href="@Model.Root().Url()">@Model.Root().Name</a>
-@foreach (var node in Model.Root().Children()) { ... }
-```
-
-**Good:**
-```cshtml
-@{ var root = Model.Root(); }
-<a href="@root.Url()">@root.Name</a>
-@foreach (var node in root.Children()) { ... }
-```
-
----
-
-### 5. Using the Services layer in Razor views
-
-`IContentService`, `IMediaService`, `IMemberService`, and similar services hit the **database
-directly**. In a Razor view they bypass the published content cache, slow rendering, and can
-cause unintended writes.
-
-**Bad:**
-```cshtml
-@inject IContentService _contentService
-@{ var item = _contentService.GetById(1234); }
-```
-
-**Good:**
-```cshtml
-@{ var item = Umbraco.Content(1234); }
-```
-
-Read-only APIs that are safe in views: `UmbracoHelper` (`@Umbraco.*`), `ITagQuery`,
-`IMemberManager`.
-
----
-
-### 6. Volatile data stored as Umbraco content nodes
-
-Umbraco's publish/index/cache pipeline is not designed for high-frequency writes. Using content
-nodes for hit counters, form submissions, or bulk imports degrades performance and stability.
-
-| Don't do this | Use instead |
-|---|---|
-| Hit counter on a content node | Google Analytics or a custom DB table |
-| New content node per form submission | Custom DB table |
-| Bulk data import into content nodes | Custom DB tables; surface via content if needed |
-
----
-
-### 7. Expensive processing during startup
-
-Code in `UmbracoApplicationStartingNotification` handlers runs synchronously during boot. Slow
-startup hurts cold starts and every application restart.
-
-**Good:** lazy-load instead:
-```csharp
-private readonly Lazy<ExpensiveResource> _resource = new(() => BuildExpensiveResource());
-```
-
-Or use `LazyInitializer.EnsureInitialized`. For one-time DB operations (e.g. creating a schema
-table), set a persistence flag so the work is skipped on subsequent restarts.
-
----
-
-### 8. Rebuilding Examine indexes unnecessarily
-
-Index rebuilds iterate every content and media item and can cause out-of-memory on large sites.
-Keep Umbraco and Examine up to date; that resolves most sync issues without manual rebuilds.
-
-Primary causes of index drift: outdated Umbraco version; rebuilding while simultaneously
-restarting the app domain.
-
----
-
-### 9. Service lookups inside Examine events
-
-`TransformingIndexValues` and `DocumentWriting` fire for **every document being indexed**. A
-service call inside one of these events becomes an N+1 problem — once per document, multiplied
-by every rebuild.
-
-**Bad:**
-```csharp
-private void OnTransformingIndexValues(object sender, IndexingItemEventArgs e)
-{
-    var content = _contentService.GetById(int.Parse(e.ValueSet.Id)); // N+1
-}
-```
-
-**Good:** use the data already present in `e.ValueSet.Values` rather than fetching from the
-service layer. For data that truly isn't in the index, batch-load it before the event fires.
-
----
-
-### 10. Using RenderTemplateAsync for content rendering
-
-`RenderTemplateAsync` renders a template to a string — designed for scenarios like email
-generation. Using it for on-page content modules causes severe performance problems.
-
-**Good:** render reusable content blocks with Partial Views:
-```cshtml
-@await Html.PartialAsync("_MyPartial", model)
-```
-
-Or use View Components for anything that requires its own service resolution.
-
----
-
-### 11. Logic in constructors
-
-Constructors should only set fields and validate parameters. LINQ operations such as `Select`,
-`OrderBy`, or `Where` may instantiate objects thousands of times — if the constructor performs
-expensive work, the cost multiplies.
-
-**Bad:**
-```csharp
-public RecipeModel(IPublishedContent content, IPublishedValueFallback fallback)
-    : base(content, fallback)
-{
-    // Runs for every object LINQ touches, including ones that are later discarded
-    RelatedRecipes = content.Parent()
-        .Children<RecipeModel>()
-        .Where(x => x.Value<IEnumerable<int>>("related").Contains(content.Id));
-}
-```
-
-**Good:** use lazy-loaded properties (see pitfall 12).
-
----
-
-### 12. Eager loading — use lazy loading instead
-
-Resolve property values only when actually accessed. The `??=` null-coalescing assignment is the
-idiomatic pattern:
-
-```csharp
-private int? _votes;
-public int Votes => _votes ??= this.Value<int>("votes");
-
-private List<int> _related;
-public IEnumerable<int> RelatedRecipes =>
-    _related ??= this.Value<IEnumerable<int>>("related").ToList();
-```
-
-Return IDs, not resolved `IPublishedContent` instances. Storing resolved entities on a cached
-model bloats the content cache.
-
----
-
-### 13. Not caching expensive lookups
-
-If the same content item (global nav root, settings node) is needed on every request, cache or
-hardcode its ID and retrieve via `Umbraco.Content(id)`. A direct ID lookup is a single cache
-dictionary hit; tree traversal is not.
-
----
-
-### 14. Memory pressure from excessive object allocation
-
-Creating thousands of wrapper objects via LINQ `Select` generates garbage-collector pressure.
-Large allocations promoted to Generation 2/3 are expensive to collect and can cause application
-pauses.
-
-Prefer querying `IPublishedContent` directly rather than wrapping every node in a custom model:
-
-```cshtml
-@foreach (var recipe in recipeNode.Children()
-    .OrderByDescending(x => x.Value<int>("votes"))
-    .Take(10))
-```
-
----
-
-### 15. Models Builder misuse
-
-Use ModelsBuilder partial classes to add **stateless, local** features — computed properties
-derived from the model's own data. Do not:
-
-- Transform content into view models inside a ModelsBuilder partial
-- Resolve and store related content as properties
-- Manage or traverse content trees
-
-These concerns belong in controllers, view components, or services.
-
----
+An index of the most impactful mistakes in Umbraco development — issues that cause memory leaks,
+instability, N+1 queries, and poor performance. Source of truth: the
+[official Umbraco docs](https://docs.umbraco.com/umbraco-cms/develop-with-umbraco/application-code/common-pitfalls.md).
+
+The docs explain each pitfall. This skill adds what the docs don't: how to **spot** it in real
+code (*Look for*), what it looks like **from the outside** (*Symptoms*), and which pitfalls
+**travel together** (*Related*). Each reference file keeps a short summary and example, and names
+its section in the docs page (*Docs section*).
+
+## How to use this index
+
+- **Reviewing or auditing code:** scan the code for the signatures in the *Look for* column, then
+  open only the reference files that match. Several pitfalls often appear together (for example
+  `DescendantsOrSelf()` and repeated `Model.Root()` calls), so check the *Related* links at the
+  end of each file.
+- **Diagnosing a symptom** (slow page, memory growth, data bleed): match the symptom to the
+  category below, then open the pitfalls in that category.
+- **Writing new code:** check the pitfalls in the categories the code touches, and apply the fix
+  before claiming correctness.
+- **When to fetch the docs:** if the reference file's example covers the fix, answer from it;
+  there is no need to fetch anything. Fetch the docs page only when the fix depends on something
+  the reference file doesn't show, such as a different API, an edge case, or a context the example
+  doesn't cover. Then read the named section instead of filling the gap from memory.
+
+## Dependency injection & lifetimes
+
+| Pitfall | Look for | Reference |
+|---|---|---|
+| Singletons and statics | `static` service fields, Service Locator calls | [singletons-and-statics.md](references/singletons-and-statics.md) |
+| Static references to request-scoped instances | `static UmbracoHelper`, `static UmbracoContext` | [static-request-scoped-instances.md](references/static-request-scoped-instances.md) |
+
+## Content querying & traversal
+
+| Pitfall | Look for | Reference |
+|---|---|---|
+| `DescendantsOrSelf()` on large trees | `.DescendantsOrSelf()` + `.Where(x => x.Level == n)` | [descendantsorself-large-trees.md](references/descendantsorself-large-trees.md) |
+| Over-querying (repeated traversals) | `Model.Root()` / `.Ancestor()` called repeatedly | [over-querying.md](references/over-querying.md) |
+| Services layer in Razor views | `@inject IContentService` (or other `I*Service`) in `.cshtml` | [services-in-razor-views.md](references/services-in-razor-views.md) |
+| Not caching expensive lookups | Traversal to find a site-wide settings or nav node | [missing-lookup-cache.md](references/missing-lookup-cache.md) |
+
+## Data storage
+
+| Pitfall | Look for | Reference |
+|---|---|---|
+| Volatile data stored as content nodes | `IContentService.Save()` per request, submission, or import row | [volatile-data-as-content.md](references/volatile-data-as-content.md) |
+
+## Startup & indexing
+
+| Pitfall | Look for | Reference |
+|---|---|---|
+| Expensive processing during startup | Heavy work in `UmbracoApplicationStartingNotification` | [expensive-startup-processing.md](references/expensive-startup-processing.md) |
+| Rebuilding Examine indexes unnecessarily | Scheduled or code-triggered index rebuilds | [unnecessary-examine-rebuilds.md](references/unnecessary-examine-rebuilds.md) |
+| Service lookups inside Examine events | Service calls in `TransformingIndexValues` / `DocumentWriting` | [service-lookups-in-examine-events.md](references/service-lookups-in-examine-events.md) |
+
+## Rendering
+
+| Pitfall | Look for | Reference |
+|---|---|---|
+| `RenderTemplateAsync` for content rendering | `RenderTemplateAsync` used for on-page output | [rendertemplateasync-misuse.md](references/rendertemplateasync-misuse.md) |
+
+## Models & object lifecycle
+
+| Pitfall | Look for | Reference |
+|---|---|---|
+| Logic in constructors | Traversal or LINQ inside a model constructor | [logic-in-constructors.md](references/logic-in-constructors.md) |
+| Eager loading | Property values assigned in the constructor; resolved content stored on models | [eager-loading.md](references/eager-loading.md) |
+| Memory pressure from object allocation | `.Select(x => new Model(x))` over large collections | [memory-pressure-allocations.md](references/memory-pressure-allocations.md) |
+| Models Builder misuse | ModelsBuilder partials that traverse content or build view models | [models-builder-misuse.md](references/models-builder-misuse.md) |
 
 ## Version compatibility
 
 The official docs page covering these pitfalls targets **Umbraco 17 and 18** — the only versions
 for which it is currently published. The underlying patterns apply to any DI-era Umbraco (v9+),
 but the documentation source is only verified against 17/18.
+
+The C# APIs used in the reference examples were compiled against `Umbraco.Cms` 17.5.3 and 18.2.0
+(checked 23-09-2026). Razor snippets were checked through their C# equivalents. On both versions
+they compile with no obsolete-API (CS0618) warnings, with one difference: the
+`PublishedContentWrapped` constructor, which is noted in
+[logic-in-constructors.md](references/logic-in-constructors.md).
 
 Currently active supported versions (as of 2026-08-05):
 
@@ -284,10 +105,6 @@ Currently active supported versions (as of 2026-08-05):
 
 Versions 10–12 and 14–16 are end-of-life. Umbraco 13 remains supported until 14-12-2026. Source:
 [Umbraco LTS & End-of-Life](https://umbraco.com/products/knowledge-center/long-term-support-and-end-of-life/).
-
-## Documentation reference
-
-- [Common Pitfalls & Anti-Patterns](https://docs.umbraco.com/umbraco-cms/develop-with-umbraco/application-code/common-pitfalls.md) — source of truth for all patterns in this skill
 
 ## Validation
 
