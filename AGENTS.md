@@ -118,6 +118,43 @@ description; use a `>` block scalar.
   needs. Don't add a script in another language without agreeing it first — it
   becomes a prerequisite for everyone who installs the skill.
 
+### Contributing a skill
+
+**Read first.** The three authoring skills each answer a different question, and none
+covers for another — a skill can pass one and fail the next. They are plain markdown, so
+read them directly if your agent does not load `.claude/skills/`:
+
+1. [`umbraco-skill-author`](.claude/skills/umbraco-skill-author/SKILL.md) — what shape
+   the skill should take: house conventions, authoring steps and templates. Start here.
+2. [`umbraco-reference-instance`](.claude/skills/umbraco-reference-instance/SKILL.md) —
+   does the skill's code **compile and serve** in a real Umbraco.
+3. [`umbraco-skill-evaluator`](.claude/skills/umbraco-skill-evaluator/SKILL.md) — does an
+   agent actually **write** that code with the skill loaded, compared with a baseline.
+
+[`umbraco-sitemap`](plugins/implementation/skills/umbraco-sitemap/SKILL.md) is the
+golden-standard published skill; when in doubt, copy its shape.
+
+**The bar a new skill must meet** before it can land:
+
+- **Right plugin** for what it produces — see the two plugins at the top of this file.
+- **A thin `SKILL.md` that routes.** Per-approach steps and branching live in
+  `references/`, code in `assets/`. State each fact once; a second copy drifts, and which
+  one the agent reads is then a coin toss.
+- **Docs as the source of truth.** Link the Umbraco `.md` doc page and have the agent
+  fetch it rather than reproduce API code from memory. Ship verbatim code in `assets/`
+  only when it genuinely isn't in the docs, and say so.
+- **At most two approaches**, which keeps the `dotnet test` gate at two reference hosts.
+- **Runtime proof for anything that ships `assets/`** — an `examples/<approach>/` project
+  in the gate, laid out as
+  [`runtime-validation.md`](.claude/skills/umbraco-skill-author/references/runtime-validation.md)
+  describes.
+- **Every gate under [Validation](#validation) green.**
+- **Self-audited** against
+  [`conformance-checklist.md`](.claude/skills/umbraco-skill-author/references/conformance-checklist.md),
+  which carries the full version of each rule above.
+- **Evaluated** with-skill against a baseline, so it demonstrably earns its keep.
+- **No unverified claims.** Never report a build, gate or eval run you didn't perform.
+
 ### Validation
 
 Every change to `plugins/**` must pass `node scripts/validate-skills.mjs` (run
