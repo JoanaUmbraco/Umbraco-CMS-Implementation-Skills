@@ -1,7 +1,7 @@
 # Stylesheets and JavaScript
 
-CSS and JS are static files under `wwwroot`, referenced from a layout or template. See also
-[templates.md](templates.md) for where to put the `<link>` / `<script>` tags.
+CSS and JS are static files under `wwwroot`, referenced from the master layout. The layout itself comes from the sibling skill
+`umbraco-templating`.
 
 ## Docs by version (fetch only the one you need, before implementing)
 
@@ -9,6 +9,7 @@ CSS and JS are static files under `wwwroot`, referenced from a layout or templat
 |---|---|
 | 18 | [Stylesheets and JavaScript](https://docs.umbraco.com/umbraco-cms/develop-with-umbraco/templating-and-rendering/design/stylesheets-javascript.md) · [RTE Style Menu](https://docs.umbraco.com/umbraco-cms/model-your-content/property-editors/built-in-umbraco-property-editors/rich-text-editor/style-menu.md) |
 | 17 | [Stylesheets and JavaScript](https://docs.umbraco.com/umbraco-cms/17.latest/develop-with-umbraco/templating-and-rendering/design/stylesheets-javascript.md) · [RTE Style Menu](https://docs.umbraco.com/umbraco-cms/17.latest/model-your-content/property-editors/built-in-umbraco-property-editors/rich-text-editor/style-menu.md) |
+
 ## Core rules (all versions)
 
 - **Locations:** stylesheets go in `wwwroot/css` and scripts in `wwwroot/scripts` by default. Any path
@@ -16,7 +17,8 @@ CSS and JS are static files under `wwwroot`, referenced from a layout or templat
   `UmbracoScriptsPath`.
 - **Reference from the layout:** `<link rel="stylesheet" href="/css/site.css" />` (or
   `@Url.Content("~/css/site.css")`) in `<head>`, and `<script src="/scripts/site.js"></script>`
-  before `</body>`. A named section lets one page add its own assets (see [templates.md](templates.md)).
+  before `</body>`. For page-specific assets, render a named section in the layout's `<head>`
+  (`@RenderSection("Head", false)`) and fill it from that page's template.
 - **Files added outside the backoffice** in those folders appear after **⋯ → Reload children** on the
   Stylesheets/Scripts folder.
 - **Third-party CSS/JS** (Bootstrap, Tailwind output, and so on) works the same way: put the built

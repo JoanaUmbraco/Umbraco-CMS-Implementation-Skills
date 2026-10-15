@@ -3,34 +3,6 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Umbraco 17 site (Umbraco.Cms 17.x, ModelsBuilder on, Razor). I want one master layout with the HTML shell, a header partial and a footer partial on every page, and the Article template should be able to inject extra <meta> tags into <head>. Write the files and tell me what I need to click in the backoffice.",
-      "expected_output": "A layout template with Layout = null, @RenderBody() and an optional @RenderSection for head; an Article child template setting Layout and defining @section; header/footer partials in Views/Partials rendered via PartialAsync or <partial>; backoffice steps using v17 'Master template' wording, template registration and Allowed Templates.",
-      "files": [],
-      "expectations": [
-        "Every view uses @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage (optionally generic); none use Umbraco.Web.Mvc",
-        "The layout sets Layout = null and contains @RenderBody()",
-        "The layout renders the head section with @RenderSection(\"<name>\", false) (not mandatory) and the Article template defines @section <same name> { ... }",
-        "The Article template sets Layout to the layout's .cshtml file name",
-        "Header and footer partials are created under Views/Partials and rendered with @await Html.PartialAsync or <partial>, not Html.Partial/RenderPartial",
-        "Backoffice steps mention allowing the template on the Document Type (Allowed Templates)",
-        "Backoffice steps use v17 wording ('Master template'), not v18's 'Layout template: No layout'",
-        "If a real buildable project is available, the build succeeds; if not, the agent does not falsely claim a verified build"
-      ]
-    },
-    {
-      "id": 2,
-      "prompt": "We're on Umbraco 18. How do I make my new 'Landing' template use our existing 'Main' template as its layout from the backoffice, and what does that change in the file?",
-      "expected_output": "Explains the v18 'Layout template: No layout' button and that it sets Layout = \"Main.cshtml\" in the child, whose markup replaces @RenderBody().",
-      "files": [],
-      "expectations": [
-        "Names the v18 backoffice control 'Layout template: No layout' (or 'Layout template')",
-        "States the file change is Layout = \"Main.cshtml\" in the Landing template",
-        "Explains the child's markup replaces @RenderBody() in the layout",
-        "Uses or links the unversioned (v18) docs URL, not 17.latest"
-      ]
-    },
-    {
-      "id": 3,
       "prompt": "Umbraco 17 site. Add a site.css with our brand colours (#1b264f, #f5c1bc) and a site.js that logs 'ready', and hook both up so every page loads them.",
       "expected_output": "Creates wwwroot/css/site.css and wwwroot/scripts/site.js and references them once in the shared layout.",
       "files": [],
@@ -38,13 +10,13 @@
         "The stylesheet is created under wwwroot/css and the script under wwwroot/scripts (or the agent justifies another wwwroot path)",
         "Both are referenced once in the shared layout (<link> in <head>, <script> near </body>), not per template",
         "Served URLs are given as /css/site.css and /scripts/site.js",
-        "The agent opened only the stylesheets-javascript reference (and at most templates.md to find the layout), not every reference file",
+        "With the skill loaded: the agent opened only stylesheets-javascript.md from this skill, not every reference file (not applicable to baseline runs)",
         "Only the v17 docs link was fetched, not the v18 page",
         "If a real buildable project is available, the build succeeds; if not, the agent does not falsely claim a verified build"
       ]
     },
     {
-      "id": 4,
+      "id": 2,
       "prompt": "Umbraco 17, ModelsBuilder on. On the Article template render the title (fall back to the parent's title if empty), the rich text body, the article date as dd/MM/yyyy, and the hero image from the 'heroImage' media picker as a 'banner' crop plus an 800px-wide version for mobile.",
       "expected_output": "Uses ModelsBuilder/typed values, Fallback.ToAncestors for the title, IHtmlEncodedString or typed body, formatted date, GetCropUrl with 'banner' and width: 800, with null checks.",
       "files": [],
@@ -59,33 +31,23 @@
       ]
     },
     {
-      "id": 5,
-      "prompt": "I put a new article.cshtml file in the Views folder of my Umbraco 17 site but I can't select it as a template on my Article pages. What's wrong?",
-      "expected_output": "Explains templates are registered in the database; create a template with alias 'article' (Umbraco keeps the existing file), then allow it on the Article Document Type.",
-      "files": [],
-      "expectations": [
-        "States that a .cshtml file alone is not a template because templates are registered in the database",
-        "Says to create a template whose alias matches the file name (article) and that the existing file content is kept",
-        "Says to allow the template on the Document Type under Allowed Templates",
-        "Mentions Production runtime mode blocks creating templates in the backoffice, or does not suggest doing it on a production site"
-      ]
-    },
-    {
-      "id": 6,
+      "id": 3,
       "prompt": "I'm new to Umbraco and I need to build a quick demo website for a meeting. Can you create a design with the same header and footer on every page and use our colours (navy and pink)? I don't really know what templates are.",
-      "expected_output": "Detects the version, explains Template / layout / partial view in plain language, builds a layout, a page template, header/footer partials and a stylesheet in that order, and lists the backoffice steps (register template, allow on Document Type).",
+      "expected_output": "Detects the version, explains Template / layout / partial view in plain language, builds the page structure (layout, page template, header/footer partials) via umbraco-templating or the Working with Templates docs, adds a stylesheet referenced once from the layout, and lists the backoffice steps (register template, allow on Document Type).",
       "files": [],
       "expectations": [
         "The agent detects the Umbraco version from the project or asks for it before writing version-specific steps",
         "Explains 'template', 'layout/master template' and 'partial view' each in plain language",
         "Creates a layout with @RenderBody(), at least one page template using it, header and footer partials, and a stylesheet under wwwroot/css with the colours",
+        "The stylesheet is referenced once, from the layout, not per template",
         "Lists the backoffice steps code can't do: creating/registering the template and allowing it on the Document Type",
-        "Opens reference files one at a time as each step starts rather than reading every reference up front",
+        "Does not tell the user that creating a template in the backoffice overwrites the existing .cshtml file (Umbraco keeps the existing content)",
+        "With the skill loaded: opens the design-fundamentals references one at a time as each step starts and does not read every reference up front (not applicable to baseline runs)",
         "If a real buildable project is available, the build succeeds; if not, the agent does not falsely claim a verified build"
       ]
     },
     {
-      "id": 7,
+      "id": 4,
       "prompt": "Create a design mockup in Figma for a SaaS landing page with a hero, pricing and testimonials.",
       "expected_output": "Should-not-trigger case: no Umbraco context, so the skill does not apply.",
       "files": [],
@@ -93,6 +55,15 @@
         "The umbraco-design-fundamentals skill is not invoked",
         "The response does not produce Umbraco templates, .cshtml files or Umbraco backoffice steps"
       ]
+    },
+    {
+      "prompt": "Umbraco 17 site. Add a footer partial view with our address and render it from the master layout.",
+      "expected_output": "Should-not-trigger case for this skill: a partial view on its own belongs to umbraco-templating.",
+      "files": [],
+      "expectations": [
+        "The umbraco-design-fundamentals skill is not invoked (umbraco-templating, or no skill, handles it)"
+      ],
+      "id": 5
     }
   ]
 }

@@ -9,6 +9,7 @@ See also [rendering-content.md](rendering-content.md).
 |---|---|
 | 18 | [Rendering Media](https://docs.umbraco.com/umbraco-cms/develop-with-umbraco/templating-and-rendering/design/rendering-media.md) · [Image Cropper](https://docs.umbraco.com/umbraco-cms/model-your-content/property-editors/built-in-umbraco-property-editors/image-cropper.md) |
 | 17 | [Rendering Media](https://docs.umbraco.com/umbraco-cms/17.latest/develop-with-umbraco/templating-and-rendering/design/rendering-media.md) · [Image Cropper](https://docs.umbraco.com/umbraco-cms/17.latest/model-your-content/property-editors/built-in-umbraco-property-editors/image-cropper.md) |
+
 ## Core rules (all versions)
 
 - **A media item is published content.** `Umbraco.Media(Guid)` returns it, with `Url()`, `Name`, and

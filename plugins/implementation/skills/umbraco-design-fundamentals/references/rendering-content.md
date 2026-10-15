@@ -1,8 +1,8 @@
 # Rendering content
 
 Showing the current page's property values, with fallbacks, and querying related content such as
-child pages and ancestors. See also [rendering-media.md](rendering-media.md) and
-[razor-basics.md](razor-basics.md).
+child pages and ancestors. See also [rendering-media.md](rendering-media.md). For the view base class (`UmbracoViewPage<T>`)
+and where templates live, see the sibling skill `umbraco-templating`.
 
 ## Docs by version (fetch only the one you need, before implementing)
 
@@ -10,6 +10,7 @@ child pages and ancestors. See also [rendering-media.md](rendering-media.md) and
 |---|---|
 | 18 | [Rendering Content](https://docs.umbraco.com/umbraco-cms/develop-with-umbraco/templating-and-rendering/design/rendering-content.md) · [Querying](https://docs.umbraco.com/umbraco-cms/develop-with-umbraco/templating-and-rendering/querying/querying.md) |
 | 17 | [Rendering Content](https://docs.umbraco.com/umbraco-cms/17.latest/develop-with-umbraco/templating-and-rendering/design/rendering-content.md) · [Querying](https://docs.umbraco.com/umbraco-cms/17.latest/develop-with-umbraco/templating-and-rendering/querying/querying.md) |
+
 ## Core rules (all versions)
 
 - **By alias:** `@Model.Value("pageTitle")`. **Typed:** `@(Model.Value<string>("pageTitle"))`,
