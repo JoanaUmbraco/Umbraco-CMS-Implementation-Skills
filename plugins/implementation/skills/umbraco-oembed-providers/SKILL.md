@@ -28,6 +28,8 @@ Open [references/embed-providers.md](references/embed-providers.md), then the as
 | Custom provider ignored / wrong provider answers | *Registration and ordering* |
 | Code copied from the docs doesn't compile or returns nothing | *Docs corrections* |
 
+**Before writing any code, open the reference and start from its asset.** The traps are only covered there: the docs' v17 example doesn't compile, its `ApiEndpoint` doubles `?url=`, and `Append` can't override a built-in that matches the same URLs.
+
 Version: read `Umbraco.Cms` from `.csproj`/`Directory.Packages.props`. Below 17 → skill doesn't apply, say so. No project → ask.
 
 ## Version compatibility

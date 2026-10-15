@@ -37,11 +37,13 @@ Trap: `Append` for URLs a built-in already matches does nothing. The built-in an
 - Anchor: `^https?:\/\/host\/path`. An unanchored `host\.com` also matches that text inside other URLs.
 - Return `null` from `GetMarkupAsync` when the URL can't be handled: `IOEmbedService` then reports `ProviderReturnedInvalidResult` instead of an exception (runtime-verified).
 
-## Docs corrections
+## Docs corrections (Umbraco 17 / 18)
 
-- **v17 page:** the DeviantArt example overrides `GetMarkup(string, int, int)` and `GeOEmbedDataAsync(...)`. Neither exists on 17.5.3: compiling it gives **CS0115** (×2) and **CS0534** (missing `GetMarkupAsync`). Override `GetMarkupAsync(string url, int? maxWidth, int? maxHeight, CancellationToken)`, identical on 17 and 18.
-- **v17 and v18 pages:** DeviantArt `ApiEndpoint` ends with `?url=`, but `GetEmbedProviderUrl` appends `?url=<encoded>` itself → `…oembed?url=?url=…`. Use the bare endpoint (as built-ins do, e.g. `https://vimeo.com/api/oembed.xml`).
-- The docs' built-in list predates LottieFiles; check the namespace above for the current set.
+| Docs snippet | Problem | Use instead |
+|---|---|---|
+| v17 page, DeviantArt example: overrides `GetMarkup(string, int, int)` and `GeOEmbedDataAsync(...)` | Neither exists on 17.5.3: **CS0115** (×2) and **CS0534** (missing `GetMarkupAsync`), verified by compiling | Override `GetMarkupAsync(string url, int? maxWidth, int? maxHeight, CancellationToken)` (same on 17 and 18) |
+| v17 and v18 pages, DeviantArt `ApiEndpoint => "…/oembed?url="` | `GetEmbedProviderUrl` appends `?url=<encoded>` itself → `…oembed?url=?url=…` | Bare endpoint, as built-ins do (e.g. `https://vimeo.com/api/oembed.xml`) |
+| Both pages: list of built-in providers | Predates LottieFiles | Check `Umbraco.Cms.Core.Media.EmbedProviders` for the current set |
 
 ## Steps
 
