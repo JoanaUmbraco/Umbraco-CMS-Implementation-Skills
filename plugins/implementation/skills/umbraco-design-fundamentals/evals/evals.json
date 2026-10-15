@@ -11,7 +11,7 @@
         "Both are referenced once in the shared layout (<link> in <head>, <script> near </body>), not per template",
         "Served URLs are given as /css/site.css and /scripts/site.js",
         "With the skill loaded: the agent opened only stylesheets-javascript.md from this skill, not every reference file (not applicable to baseline runs)",
-        "Only the v17 docs link was fetched, not the v18 page",
+        "Any Umbraco docs fetched are the 17.latest pages",
         "If a real buildable project is available, the build succeeds; if not, the agent does not falsely claim a verified build"
       ]
     },

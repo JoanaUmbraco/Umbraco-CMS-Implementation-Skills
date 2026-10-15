@@ -1,7 +1,7 @@
 ---
 name: umbraco-design-fundamentals
 description: >
-  The look of a server-rendered Umbraco 17/18 site: CSS/JS in wwwroot, rendering content (typed
+  The look of a server-rendered Umbraco 17 site: CSS/JS in wwwroot, rendering content (typed
   values, fallbacks, child pages) and media (images, crops, resizing, video) in Razor, and a guided
   path for a whole design. Use when asked to "add CSS/JS", "add Bootstrap/Tailwind", "show an
   image", "render a crop", "resize an image", "list child pages", "fall back to the parent's
@@ -24,23 +24,16 @@ doesn't repeat it, and it also walks newcomers through building a whole design.
 
 - **Don't read the whole `references/` folder.** Open only the reference for the step you're on,
   when you start it. For example, "add a stylesheet" needs only `stylesheets-javascript.md`.
-- Inside a reference, **fetch only the doc link for the detected version**, not both.
+- Inside a reference, **fetch only the docs page for the step you're on.**
 - Each reference stands alone. Its cross-links are "see also", not prerequisites.
 - Ask the docs agent (below) only when the reference and the versioned doc don't answer the question.
 
-## Step 0: detect the version
+## Step 0: check the version
 
-Read the `Umbraco.Cms` package version from the `.csproj` or `Directory.Packages.props`, then use the
-matching docs:
-
-| Version | Docs root |
-|---|---|
-| **18** | `https://docs.umbraco.com/umbraco-cms/develop-with-umbraco/...` (unversioned URLs are v18) |
-| **17** | `https://docs.umbraco.com/umbraco-cms/17.latest/develop-with-umbraco/...` |
-
-If the site is below 17, this skill doesn't apply: say so. If no project or version is available, ask
-the user rather than guessing. The pages this skill uses are the same on 17 and 18 apart from their
-URLs.
+This skill targets **Umbraco 17**, and its doc links are the `17.latest` pages. Read the
+`Umbraco.Cms` package version from the `.csproj` or `Directory.Packages.props`. If the site is below
+17, this skill doesn't apply: say so. If no project or version is available, ask the user rather
+than guessing.
 
 ## Routing table
 
@@ -49,7 +42,7 @@ URLs.
 | Stylesheets, scripts, front-end libraries, RTE styles | [stylesheets-javascript.md](references/stylesheets-javascript.md) |
 | Property values, typed values, fallbacks, child pages / traversal | [rendering-content.md](references/rendering-content.md) |
 | Images, crops, resizing, video, files | [rendering-media.md](references/rendering-media.md) |
-| Templates, master layouts, named sections, partial views, view components, controllers | Sibling skill **`umbraco-templating`**. If it isn't installed, fetch [Working with Templates](https://docs.umbraco.com/umbraco-cms/17.latest/develop-with-umbraco/templating-and-rendering/templates.md) (drop `/17.latest` for v18). |
+| Templates, master layouts, named sections, partial views, view components, controllers | Sibling skill **`umbraco-templating`**. If it isn't installed, fetch [Working with Templates](https://docs.umbraco.com/umbraco-cms/17.latest/develop-with-umbraco/templating-and-rendering/templates.md). |
 
 ## Building a whole design (for people new to Umbraco)
 

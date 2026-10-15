@@ -4,14 +4,9 @@ Showing the current page's property values, with fallbacks, and querying related
 child pages and ancestors. See also [rendering-media.md](rendering-media.md). For the view base class (`UmbracoViewPage<T>`)
 and where templates live, see the sibling skill `umbraco-templating`.
 
-## Docs by version (fetch only the one you need, before implementing)
+**Docs (Umbraco 17, fetch before implementing):** [Rendering Content](https://docs.umbraco.com/umbraco-cms/17.latest/develop-with-umbraco/templating-and-rendering/design/rendering-content.md) · [Querying](https://docs.umbraco.com/umbraco-cms/17.latest/develop-with-umbraco/templating-and-rendering/querying/querying.md)
 
-| Version | Pages |
-|---|---|
-| 18 | [Rendering Content](https://docs.umbraco.com/umbraco-cms/develop-with-umbraco/templating-and-rendering/design/rendering-content.md) · [Querying](https://docs.umbraco.com/umbraco-cms/develop-with-umbraco/templating-and-rendering/querying/querying.md) |
-| 17 | [Rendering Content](https://docs.umbraco.com/umbraco-cms/17.latest/develop-with-umbraco/templating-and-rendering/design/rendering-content.md) · [Querying](https://docs.umbraco.com/umbraco-cms/17.latest/develop-with-umbraco/templating-and-rendering/querying/querying.md) |
-
-## Core rules (all versions)
+## Core rules
 
 - **By alias:** `@Model.Value("pageTitle")`. **Typed:** `@(Model.Value<string>("pageTitle"))`,
   `@(Model.Value<IHtmlEncodedString>("bodyContent"))` (needs `@using Umbraco.Cms.Core.Strings;`), and
@@ -25,11 +20,7 @@ and where templates live, see the sibling skill `umbraco-templating`.
   - With ModelsBuilder: `Model.ValueFor(x => x.PageTitle, fallback: ...)` (projects after Jan 2020).
 - **Querying:** `Model.Children()`, `Ancestors()`, `Descendants()`, plus `Url()` / `Name()` for links.
   Avoid `Descendants()` over large trees on every request.
-
-## Version differences
-
-None between 17 and 18: the pages match apart from doc link paths. Rich, editor-composed layouts use
-Block List or Block Grid.
+- **Rich, editor-composed layouts** use Block List or Block Grid.
 
 ## Steps
 

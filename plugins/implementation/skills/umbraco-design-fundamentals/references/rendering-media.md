@@ -3,14 +3,9 @@
 Showing images, video and files from the Media library, including Image Cropper crops and resizing.
 See also [rendering-content.md](rendering-content.md).
 
-## Docs by version (fetch only the one you need, before implementing)
+**Docs (Umbraco 17, fetch before implementing):** [Rendering Media](https://docs.umbraco.com/umbraco-cms/17.latest/develop-with-umbraco/templating-and-rendering/design/rendering-media.md) · [Image Cropper](https://docs.umbraco.com/umbraco-cms/17.latest/model-your-content/property-editors/built-in-umbraco-property-editors/image-cropper.md)
 
-| Version | Pages |
-|---|---|
-| 18 | [Rendering Media](https://docs.umbraco.com/umbraco-cms/develop-with-umbraco/templating-and-rendering/design/rendering-media.md) · [Image Cropper](https://docs.umbraco.com/umbraco-cms/model-your-content/property-editors/built-in-umbraco-property-editors/image-cropper.md) |
-| 17 | [Rendering Media](https://docs.umbraco.com/umbraco-cms/17.latest/develop-with-umbraco/templating-and-rendering/design/rendering-media.md) · [Image Cropper](https://docs.umbraco.com/umbraco-cms/17.latest/model-your-content/property-editors/built-in-umbraco-property-editors/image-cropper.md) |
-
-## Core rules (all versions)
+## Core rules
 
 - **A media item is published content.** `Umbraco.Media(Guid)` returns it, with `Url()`, `Name`, and
   properties like `umbracoWidth` / `umbracoHeight` (images only; a `File` or `Video` doesn't have
@@ -25,10 +20,6 @@ See also [rendering-content.md](rendering-content.md).
 - Use the media's `Name`, or a dedicated alt-text property, for `alt`.
 - Media is usually picked on content (Media Picker) rather than looked up by a hard-coded GUID.
   Render the picked value from the page.
-
-## Version differences
-
-None: the Rendering Media page is identical on 17 and 18 apart from doc link paths.
 
 ## Steps
 

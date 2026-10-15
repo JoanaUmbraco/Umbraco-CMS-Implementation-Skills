@@ -1,45 +1,61 @@
 # Stylesheets and JavaScript
 
-CSS and JS are static files under `wwwroot`, referenced from the master layout. The layout itself comes from the sibling skill
-`umbraco-templating`.
+Stylesheets and scripts are static files under `wwwroot`, referenced once from the master layout. The
+layout itself comes from the sibling skill `umbraco-templating`.
 
-## Docs by version (fetch only the one you need, before implementing)
+**Docs (Umbraco 17, fetch before implementing):** [Stylesheets and JavaScript](https://docs.umbraco.com/umbraco-cms/17.latest/develop-with-umbraco/templating-and-rendering/design/stylesheets-javascript.md) · [RTE Style Menu](https://docs.umbraco.com/umbraco-cms/17.latest/model-your-content/property-editors/built-in-umbraco-property-editors/rich-text-editor/style-menu.md)
 
-| Version | Pages |
-|---|---|
-| 18 | [Stylesheets and JavaScript](https://docs.umbraco.com/umbraco-cms/develop-with-umbraco/templating-and-rendering/design/stylesheets-javascript.md) · [RTE Style Menu](https://docs.umbraco.com/umbraco-cms/model-your-content/property-editors/built-in-umbraco-property-editors/rich-text-editor/style-menu.md) |
-| 17 | [Stylesheets and JavaScript](https://docs.umbraco.com/umbraco-cms/17.latest/develop-with-umbraco/templating-and-rendering/design/stylesheets-javascript.md) · [RTE Style Menu](https://docs.umbraco.com/umbraco-cms/17.latest/model-your-content/property-editors/built-in-umbraco-property-editors/rich-text-editor/style-menu.md) |
+## Where the files go
 
-## Core rules (all versions)
+| | Default folder | Served at | Backoffice folder setting |
+|---|---|---|---|
+| Stylesheets | `wwwroot/css` | `/css/…` | `UmbracoCssPath` |
+| Scripts | `wwwroot/scripts` | `/scripts/…` | `UmbracoScriptsPath` |
 
-- **Locations:** stylesheets go in `wwwroot/css` and scripts in `wwwroot/scripts` by default. Any path
-  under `wwwroot` is served. The backoffice only lists the folders set by `UmbracoCssPath` and
-  `UmbracoScriptsPath`.
-- **Reference from the layout:** `<link rel="stylesheet" href="/css/site.css" />` (or
-  `@Url.Content("~/css/site.css")`) in `<head>`, and `<script src="/scripts/site.js"></script>`
-  before `</body>`. For page-specific assets, render a named section in the layout's `<head>`
+Any path under `wwwroot` is served, but the backoffice only lists the two folders above.
+
+## Stylesheets
+
+Add one `<link>` in the layout's `<head>`:
+
+```html
+<link rel="stylesheet" href="/css/site.css" />
+```
+
+`@Url.Content("~/css/site.css")` works too.
+
+## JavaScript
+
+Add one `<script>` just before `</body>`:
+
+```html
+<script src="/scripts/site.js"></script>
+```
+
+## Both
+
+- **Only some pages need it?** Render a named section in the layout's `<head>`
   (`@RenderSection("Head", false)`) and fill it from that page's template.
-- **Files added outside the backoffice** in those folders appear after **⋯ → Reload children** on the
-  Stylesheets/Scripts folder.
-- **Third-party CSS/JS** (Bootstrap, Tailwind output, and so on) works the same way: put the built
-  files under `wwwroot`, or link a CDN, and reference them from the layout.
-- **The Rich Text Editor doesn't pick up site CSS automatically.** Editor styles are configured in
-  the RTE configuration. Site CSS still has to exist for the frontend.
+- **Third-party files** (Bootstrap, Tailwind output, …): put the built files under `wwwroot`, or link a
+  CDN, and reference them from the layout in the same way.
+- **Created in the backoffice:** Settings → Stylesheets (or Scripts) → ⋯ → Create → Stylesheet file
+  / JavaScript file.
+- **Added to the folder outside the backoffice:** they appear after ⋯ → Reload children on that
+  folder.
+- **Bundling or minifying:** the docs don't cover a built-in option. Use the project's own front-end
+  build (npm, Vite, webpack, …) and reference its output files from `wwwroot`.
 
-## Version differences
+## Rich Text Editor styles
 
-None between 17 and 18. On both, the backoffice create flow is **Settings → Stylesheets (or
-Scripts) → ⋯ → Create → Stylesheet file / JavaScript file**, and RTE styles come from the **Style
-Menu** configuration. Neither page documents built-in bundling or minification. If the user wants
-it, use the project's own front-end build (npm, Vite, webpack…) and reference the output files from
-`wwwroot`.
+The editor doesn't pick up site CSS automatically. Editor styles come from the RTE **Style Menu**
+configuration (docs link above). The site CSS is still needed for the front end.
 
 ## Steps
 
-1. Check for an existing `wwwroot/css` / `wwwroot/scripts` and a layout `<head>`.
+1. Check for an existing `wwwroot/css`, `wwwroot/scripts` and a layout `<head>`.
 2. Add the files and reference them once, in the layout.
-3. Build/run if possible. Otherwise say it wasn't verified.
+3. Build and run if possible. Otherwise say it wasn't verified.
 
 ## Done
 
-Give the file paths and the URLs they're served from (`/css/...`, `/scripts/...`).
+Give the file paths and the URLs they're served from (`/css/…`, `/scripts/…`).
