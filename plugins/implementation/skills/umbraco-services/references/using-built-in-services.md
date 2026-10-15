@@ -15,7 +15,7 @@ Docs (v18 links; for v17 insert `/17.latest` after `/umbraco-cms`):
 
 | Doing | Use | Never |
 |---|---|---|
-| Read published content | Cache: `IPublishedContentQuery`, `UmbracoHelper` (in request), `UmbracoContext.Content` via `IUmbracoContextFactory`, `IDocumentNavigationQueryService` (root keys, children) | `IContentService.GetById` etc.: read lock + **DB query every call** (17 and 18) |
+| Read published content | Cache: `IPublishedContentQuery`, `UmbracoHelper` (in request), `IPublishedContentCache` (injectable singleton, 15+), `UmbracoContext.Content` via `IUmbracoContextFactory`, `IDocumentNavigationQueryService` (root keys, children) | `IContentService.GetById` etc.: read lock + **DB query every call** (17 and 18) |
 | Change content/media/members/relations | `IContentService`, `IMediaService`, `IMemberService`, `IRelationService` | From a view or per request (→ `umbraco-common-pitfalls`) |
 
 ## Where the code runs
@@ -24,11 +24,15 @@ Docs (v18 links; for v17 insert `/17.latest` after `/umbraco-cms`):
 |---|---|---|
 | **Controller** (Render/Surface/plain) | Constructor injection: `IPublishedContentQuery` to read, management services to write. Controller shape → `umbraco-templating` | [`SiteServiceController.cs`](../assets/SiteServiceController.cs) |
 | **Notification handler** | Inject management services directly. To read the cache: inject `IUmbracoContextFactory`, `using var r = factory.EnsureUmbracoContext();`. `IUmbracoContextAccessor` finds nothing (no front-end request) | [`UnpublishingUrlRecorder.cs`](../assets/UnpublishingUrlRecorder.cs) + [`SiteServiceComposer.cs`](../assets/SiteServiceComposer.cs) (registration) |
-| **No HTTP request** (hosted service, scheduled job) | Singleton + `IUmbracoContextFactory` (+ `IDocumentNavigationQueryService`); `EnsureUmbracoContext()` in `using` per read; never store context/content in fields | [`RootContentReader.cs`](../assets/RootContentReader.cs) + [`SiteServiceComposer.cs`](../assets/SiteServiceComposer.cs) (registration) |
+| **No HTTP request** (hosted service, scheduled job) | Singleton (+ `IDocumentNavigationQueryService`). Read via **B** injected `IPublishedContentCache` (no context) or **A** `IUmbracoContextFactory` + `EnsureUmbracoContext()` in `using` per read. **Building URLs needs A**: `IPublishedUrlProvider` throws *"Wasn't able to get an UmbracoContext"* without one. Never store context/content in fields | [`RootContentReader.cs`](../assets/RootContentReader.cs) + [`SiteServiceComposer.cs`](../assets/SiteServiceComposer.cs) (registration) |
 | **Content finder / URL provider** | Inject `IUmbracoContextAccessor`, `TryGetUmbracoContext` (pipeline has a context). 404 → `umbraco-custom-error-pages` | — |
 | **View** | → `umbraco-templating` (`@inject`). No management services in views (→ `umbraco-common-pitfalls`) | — |
 
 No-request symptoms: `TryGetUmbracoContext` returns false; DI throws *"Cannot resolve scoped service … from root provider"* when a singleton asks for `IPublishedContentQuery`/`UmbracoHelper`.
+
+## Culture unpublish (17.6.0+ / 18.1.0+)
+
+`UnpublishedCultures` (per content key) exists on **both** `ContentPublishedNotification` and `ContentUnpublishedNotification`, from 17.6.0 and 18.1.0 (not on 17.5.x or 18.0). Unpublishing **some** languages while others stay live raises `ContentPublishedNotification`, **once per culture**; unpublishing the whole page (or the last/mandatory language) raises `ContentUnpublishedNotification`. To log every culture unpublish, handle both. (Source-verified at `release-18.2.1`, not runtime-tested.)
 
 ## Docs corrections
 

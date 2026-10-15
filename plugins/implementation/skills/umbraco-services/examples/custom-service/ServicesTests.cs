@@ -1,7 +1,13 @@
 using System.Net;
 using Microsoft.Extensions.DependencyInjection;
+using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.PublishedCache;
+using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Services.Navigation;
+using Umbraco.Cms.Core.Web;
 using Umbraco.Skills.Examples.Services.Services;
 
 namespace Umbraco_CMS.Skills.TestHost;
@@ -55,6 +61,35 @@ public class ServicesTests
         string? name = Resolve<RootContentReader>().GetSiteRootName();
 
         Assert.That(name, Is.EqualTo(ExpectedRootName()));
+    }
+
+    [Test]
+    public void Singleton_reader_reads_through_the_injected_published_cache_outside_any_request()
+    {
+        // Option B: IPublishedContentCache is a singleton (Umbraco 15+), so no UmbracoContext is opened.
+        string? name = Resolve<RootContentReader>().GetSiteRootNameFromCache();
+
+        Assert.That(name, Is.EqualTo(ExpectedRootName()));
+    }
+
+    /// <summary>
+    /// Guards the skill's claim that option B (injected cache, no context) can read content but can't build
+    /// URLs: IPublishedUrlProvider needs an UmbracoContext. If a future Umbraco lifts this, the reference
+    /// should drop the "URLs need option A" rule, and this test will say so.
+    /// </summary>
+    [Test]
+    public void Url_generation_outside_a_request_needs_an_open_context()
+    {
+        IPublishedContentCache cache = Resolve<IPublishedContentCache>();
+        IPublishedUrlProvider urls = Resolve<IPublishedUrlProvider>();
+        Resolve<IDocumentNavigationQueryService>().TryGetRootKeys(out IEnumerable<Guid> keys);
+        IPublishedContent root = keys.Select(k => cache.GetById(k)).First(c => c is not null)!;
+
+        Assert.That(() => urls.GetUrl(root), Throws.InvalidOperationException,
+            "without a context GetUrl should throw");
+
+        using UmbracoContextReference reference = Resolve<IUmbracoContextFactory>().EnsureUmbracoContext();
+        Assert.That(urls.GetUrl(root), Is.Not.Empty, "with a context the same call should return a URL");
     }
 
     [Test]

@@ -12,6 +12,7 @@ runs used **one run per configuration**, so differences of a single assertion ca
 | 1 | 15-10-2026 | First draft (before AI-oriented rewrite), uncommitted | 1, 2, 3, 4, 6 (original prompts) | with / without | 100% vs 93%; +10.3k tokens (+20%) with skill. Every with-skill run fetched the ~8k-token docs page |
 | 2 | 15-10-2026 | AI-oriented rewrite, before the "open another asset/fetch when needed" wording fix | same as 1 | with only | 100%; 53.3k tokens avg (vs 61.2k in iteration 1; baseline 50.9k) → +2.5k (+5%). No docs fetched |
 | 3 | 15-10-2026 | Commit `87b2a06` | 1, 2, 3, 6 rewritten as trap prompts | with / without | 100% vs 96%; +3.7k tokens. Baselines researched the source themselves (`gh api`) |
+| 4 | 15-10-2026 | Adds `IPublishedContentCache` option (B) with tests, the "URLs need a context" rule (runtime-verified), and the corrected *Culture unpublish* section | same as 3 (same expectations) | with only | 100%; 56.8k tokens (vs 58.2k in iteration 3; baseline 54.5k); 72s (vs 87s). Eval 3 answered from the skill instead of researching (−8.4k tokens, −42s) |
 
 Notes per iteration are in each `benchmark.json` (`notes`) where present.
 
