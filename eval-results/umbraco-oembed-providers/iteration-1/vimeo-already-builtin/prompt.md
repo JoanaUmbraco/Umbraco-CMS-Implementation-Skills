@@ -1,1 +1,0 @@
-Umbraco 17. Our editors want to embed Vimeo videos in the Embed dialog. Can you add a Vimeo embed provider?

@@ -34,7 +34,7 @@ Version: read `Umbraco.Cms` from `.csproj`/`Directory.Packages.props`. Below 17 
 
 ## Version compatibility
 
-17 and 18: `IEmbedProvider` and `OEmbedProviderBase` are the same (`GetMarkupAsync` only). Assets compile on 17.5.3 and 18.2.0 with no warnings; runtime-verified on 17.5.3. 18 adds `protected virtual HttpClient GetHttpClient()` to `OEmbedProviderBase` (swap the client, e.g. for a proxy or tests).
+17 and 18: `IEmbedProvider` and `OEmbedProviderBase` are the same (`GetMarkupAsync` only). Assets compile on 17.5.3 and 18.2.0 with no warnings; runtime-verified on 17.5.3. 17.7+ and 18.2+ add `protected virtual HttpClient GetHttpClient()` to `OEmbedProviderBase` (swap the client, e.g. for a proxy or tests); it isn't on 17.5.3 or 18.0/18.1.
 
 ## Best practices
 

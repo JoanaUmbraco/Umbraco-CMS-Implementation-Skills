@@ -42,6 +42,7 @@ Trap: `Append` for URLs a built-in already matches does nothing. The built-in an
 | Docs snippet | Problem | Use instead |
 |---|---|---|
 | v17 page, DeviantArt example: overrides `GetMarkup(string, int, int)` and `GeOEmbedDataAsync(...)` | Neither exists on 17.5.3: **CS0115** (×2) and **CS0534** (missing `GetMarkupAsync`), verified by compiling | Override `GetMarkupAsync(string url, int? maxWidth, int? maxHeight, CancellationToken)` (same on 17 and 18) |
+| v17 page, Azure Media Player (no oEmbed) example: overrides `GetMarkup(string, int, int)` | Same on 17.5.3: **CS0115** and **CS0534**, verified by compiling | Override `GetMarkupAsync`, as [`CustomVideoEmbedProvider.cs`](../assets/CustomVideoEmbedProvider.cs) does |
 | v17 and v18 pages, DeviantArt `ApiEndpoint => "…/oembed?url="` | `GetEmbedProviderUrl` appends `?url=<encoded>` itself → `…oembed?url=?url=…` | Bare endpoint, as built-ins do (e.g. `https://vimeo.com/api/oembed.xml`) |
 | Both pages: list of built-in providers | Predates LottieFiles | Check `Umbraco.Cms.Core.Media.EmbedProviders` for the current set |
 
