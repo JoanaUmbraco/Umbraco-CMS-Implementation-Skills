@@ -23,7 +23,7 @@ Docs (v18 links; for v17 insert `/17.latest` after `/umbraco-cms`):
 | Context | Get services by | Open asset |
 |---|---|---|
 | **Controller** (Render/Surface/plain) | Constructor injection: `IPublishedContentQuery` to read, management services to write. Controller shape → `umbraco-templating` | [`SiteServiceController.cs`](../assets/SiteServiceController.cs) |
-| **Notification handler** | Inject management services directly. To read the cache: inject `IUmbracoContextFactory`, `using var r = factory.EnsureUmbracoContext();`. `IUmbracoContextAccessor` finds nothing (no front-end request) | [`UnpublishingUrlRecorder.cs`](../assets/UnpublishingUrlRecorder.cs) + [`SiteServiceComposer.cs`](../assets/SiteServiceComposer.cs) (registration) |
+| **Notification handler** | Inject management services directly. To read the cache: inject `IUmbracoContextFactory`, `using var r = factory.EnsureUmbracoContext();`. Don't rely on `IUmbracoContextAccessor`: a backoffice save has a context (the request middleware opens one for every non-file request), but scheduled publishing and code in jobs raise the same notifications with none. `EnsureUmbracoContext()` reuses the request's context when there is one | [`UnpublishingUrlRecorder.cs`](../assets/UnpublishingUrlRecorder.cs) + [`SiteServiceComposer.cs`](../assets/SiteServiceComposer.cs) (registration) |
 | **No HTTP request** (hosted service, scheduled job) | Singleton (+ `IDocumentNavigationQueryService`). Read via **B** injected `IPublishedContentCache` (no context) or **A** `IUmbracoContextFactory` + `EnsureUmbracoContext()` in `using` per read. **Building URLs needs A**: `IPublishedUrlProvider` throws *"Wasn't able to get an UmbracoContext"* without one. Never store context/content in fields | [`RootContentReader.cs`](../assets/RootContentReader.cs) + [`SiteServiceComposer.cs`](../assets/SiteServiceComposer.cs) (registration) |
 | **Content finder / URL provider** | Inject `IUmbracoContextAccessor`, `TryGetUmbracoContext` (pipeline has a context). 404 → `umbraco-custom-error-pages` | — |
 | **View** | → `umbraco-templating` (`@inject`). No management services in views (→ `umbraco-common-pitfalls`) | — |
@@ -36,7 +36,7 @@ No-request symptoms: `TryGetUmbracoContext` returns false; DI throws *"Cannot re
 
 ## Docs corrections
 
-v17 docs (*Accessing the Published Content Cache from a Content Finder / UrlProvider*) handle **`ContentUnpublishedNotification`** and claim the item is still cached. Wrong: "-ed" fires **after** the page leaves the cache (v17 source); on 17.5.3 the handler runs but `Content.GetById` returns null (verified by the runtime gate). Use **`ContentUnpublishingNotification`** (fires before; v18 docs agree). Its items are in `UnpublishedEntities` (name kept on the "-ing" notification).
+v17 docs (*Accessing Published Content outside of a HTTP Request*) handle **`ContentUnpublishedNotification`** and claim the item is still cached. Wrong: "-ed" fires **after** the page leaves the cache (v17 source); on 17.5.3 the handler runs but `Content.GetById` returns null (verified by the runtime gate). Use **`ContentUnpublishingNotification`** (fires before; v18 docs agree). Its items are in `UnpublishedEntities` (name kept on the "-ing" notification).
 
 ## Steps
 

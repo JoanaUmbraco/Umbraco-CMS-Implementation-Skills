@@ -28,7 +28,8 @@ public class UnpublishingUrlRecorder : INotificationHandler<ContentUnpublishingN
 
     public void Handle(ContentUnpublishingNotification notification)
     {
-        // Backoffice action: no front-end request, so open a context.
+        // Scheduled unpublish and background code have no request, so ensure a context
+        // (inside a backoffice request this reuses the request's own).
         using UmbracoContextReference contextReference = _umbracoContextFactory.EnsureUmbracoContext();
 
         // On the "-ing" notification these are the items about to be unpublished.

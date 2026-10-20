@@ -31,6 +31,7 @@ Wrong-lifetime symptoms: startup *"Cannot consume scoped service … from single
 ## Registration
 
 One `IComposer` per feature: `builder.Services.Add…` for services, `builder.AddNotificationHandler<TNotification, THandler>()` for handlers → [`SiteServiceComposer.cs`](../assets/SiteServiceComposer.cs).
+Composer order, `Program.cs` registration, replacing a built-in service or a collection item: sibling skill [`umbraco-composing`](../../umbraco-composing/SKILL.md).
 Circular dependency at startup (often `IUmbracoContextFactory` + third-party code): inject `Lazy<IUmbracoContextFactory>`, use `.Value` when needed.
 
 ## Using it
