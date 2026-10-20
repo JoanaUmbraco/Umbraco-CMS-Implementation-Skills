@@ -45,6 +45,7 @@ workflow; the others link into them.
 | `umbraco-custom-maintenance-page` | Customises the page visitors see while Umbraco runs upgrade migrations |
 | `umbraco-common-pitfalls` | Reference guide to anti-patterns, performance traps and common mistakes |
 | `umbraco-templating` | Templates, partial views, view components, route hijacking and surface-controller forms, with runtime-tested code |
+| `umbraco-design-fundamentals` | Stylesheets and scripts in `wwwroot`, rendering content and media in Razor, and a guided path for a whole design |
 
 ## Quick Start
 

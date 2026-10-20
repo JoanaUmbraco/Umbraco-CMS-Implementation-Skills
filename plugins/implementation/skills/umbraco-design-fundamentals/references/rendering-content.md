@@ -17,7 +17,9 @@ and where templates live, see the sibling skill `umbraco-templating`.
   - `Fallback.ToAncestors`
   - `Fallback.ToLanguage` (needs fallback languages configured)
   - Combined: `Fallback.To(Fallback.Language, Fallback.Ancestors)`, where order matters.
-  - With ModelsBuilder: `Model.ValueFor(x => x.PageTitle, fallback: ...)` (projects after Jan 2020).
+  - With ModelsBuilder: `Model.ValueFor(x => x.PageTitle, fallback: ...)`. It ignores `defaultValue:`
+    on Umbraco 17 (the view extension doesn't pass it on), so when you need a default value use
+    `Model.Value("pageTitle", fallback: ..., defaultValue: ...)` instead.
 - **Querying:** `Model.Children()`, `Ancestors()`, `Descendants()`, plus `Url()` / `Name()` for links.
   Avoid `Descendants()` over large trees on every request.
 - **Rich, editor-composed layouts** use Block List or Block Grid.

@@ -16,6 +16,9 @@ See also [rendering-content.md](rendering-content.md).
 - **Crops:** `@Url.GetCropUrl(mediaItem, "square")` uses a crop defined on the Image Cropper Data
   Type. **Max width, keeping the aspect ratio:** `mediaItem.GetCropUrl(width: 800)`, with no
   height or crop alias. The original image is just `mediaItem.Url()`.
+- **A Media Picker value is a `MediaWithCrops`**, not the `Image` model (use `.Content` for that).
+  Crops defined on the Media Picker itself only apply through `picked.GetCropUrl("banner")`;
+  `Url.GetCropUrl(picked, "banner")` reads only the media item's own Image Cropper crops.
 - **Video:** render `Url()` in a `<video><source type="video/mp4"></video>` tag.
 - Use the media's `Name`, or a dedicated alt-text property, for `alt`.
 - Media is usually picked on content (Media Picker) rather than looked up by a hard-coded GUID.

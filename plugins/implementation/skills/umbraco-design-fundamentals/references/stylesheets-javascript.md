@@ -47,8 +47,11 @@ Add one `<script>` just before `</body>`:
 
 ## Rich Text Editor styles
 
-The editor doesn't pick up site CSS automatically. Editor styles come from the RTE **Style Menu**
-configuration (docs link above). The site CSS is still needed for the front end.
+The editor doesn't pick up site CSS automatically. To style the editor's content, pick the
+stylesheet in the Rich Text Editor Data Type's **Stylesheets** setting (it lists the files in
+`wwwroot/css`). That doesn't add a styles dropdown: the toolbar's **Style Select** menu is
+configured separately (RTE Style Menu, docs link above). The site CSS is still referenced from the
+layout for the front end.
 
 ## Steps
 
