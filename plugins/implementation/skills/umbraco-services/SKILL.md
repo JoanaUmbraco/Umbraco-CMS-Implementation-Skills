@@ -37,7 +37,7 @@ The rules live once, in the references: *Read vs change* and *Where the code run
 ## Version compatibility
 
 17 and 18. Assets compile on 17.5.3 and 18.2.0 with no errors or obsolete-API warnings (18 adds style warning AV0014, `[ApiController]`, on the example controller). Runtime-verified on 17.5.3 only.
-On 18: some `IContentService` members moved to base `IPublishableContentService<IContent>` (callers unaffected); `SaveBlueprint(IContent, int)` removed (obsolete on 17). `UnpublishedCultures` on both Published/Unpublished notifications from 17.6.0/18.1.0 → using-built-in-services, *Culture unpublish*.
+On 18: some `IContentService` members moved to base `IPublishableContentService<IContent>` (callers unaffected); `SaveBlueprint(IContent, int)` removed (obsolete on 17): call `SaveBlueprint(content, createdFromContent, userId)`, `null` when there is no source. `UnpublishedCultures` on both Published/Unpublished notifications from 17.6.0/18.1.0 → using-built-in-services, *Culture unpublish*.
 
 ## Coverage
 

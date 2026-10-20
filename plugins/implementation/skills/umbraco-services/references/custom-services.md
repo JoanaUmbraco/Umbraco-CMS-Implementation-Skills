@@ -22,7 +22,7 @@ Docs (v18 links; for v17 insert `/17.latest` after `/umbraco-cms`):
 |---|---|---|
 | Anything scoped (`IPublishedContentQuery`, `UmbracoHelper`) | `AddScoped`; request-only (controllers, views) | [`SiteService.cs`](../assets/SiteService.cs) + [`ISiteService.cs`](../assets/ISiteService.cs) |
 | Only singletons; reads via `IPublishedContentCache` or `IUmbracoContextFactory` | `AddSingleton`; works in requests **and** background work (URLs need the factory's context) | [`RootContentReader.cs`](../assets/RootContentReader.cs) |
-| `IPublishedContentQueryAccessor` (singleton), `TryGetValue` per use | `AddSingleton`; query only available during a request | — (v18 docs pattern; accessor exists on 17) |
+| `IPublishedContentQueryAccessor` (singleton), `TryGetValue` per use | `AddSingleton`; `TryGetValue` resolves the query from the current request's services (`HttpContext.RequestServices`), so it returns false in jobs and hosted services | — (v18 docs pattern; accessor exists on 17) |
 | App-wide state | `AddSingleton`, thread-safe | `UnpublishedUrlStore` in [`UnpublishingUrlRecorder.cs`](../assets/UnpublishingUrlRecorder.cs) |
 | Nothing stateful or expensive | `AddTransient` (new per injection) | — |
 
