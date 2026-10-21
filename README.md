@@ -46,6 +46,7 @@ workflow; the others link into them.
 | `umbraco-common-pitfalls` | Reference guide to anti-patterns, performance traps and common mistakes |
 | `umbraco-templating` | Templates, partial views, view components, route hijacking and surface-controller forms, with runtime-tested code |
 | `umbraco-oembed-providers` | Embed (oEmbed) providers in C#: new oEmbed hosts, hosts without oEmbed, replacing a built-in (e.g. youtube-nocookie), registration order |
+| `umbraco-services` | Published cache vs management services, reading content with no request (jobs, notification handlers), custom services and their lifetimes |
 | `umbraco-security-headers` | A Content Security Policy using Umbraco's nonce, with separate backoffice and site policies, plus the other security headers |
 | `umbraco-notifications` | Runs server-side code when Umbraco saves, publishes or deletes content, or raises your own notification, with runtime-tested handlers |
 | `umbraco-security-2fa` | Authenticator-app two-factor authentication for backoffice users and website members, with runtime-tested code |
