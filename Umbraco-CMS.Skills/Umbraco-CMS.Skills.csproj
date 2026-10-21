@@ -21,6 +21,7 @@
     <ProjectReference Include="../plugins/implementation/skills/umbraco-custom-error-pages/examples/approach-a-content-finder/Umbraco-CustomErrorPages.Example.csproj" />
     <ProjectReference Include="../plugins/implementation/skills/umbraco-composing/examples/approach-a-composer/Umbraco-Composing.Example.csproj" />
     <ProjectReference Include="../plugins/implementation/skills/umbraco-multilingual/examples/additional-cultures/Umbraco-Multilingual.AdditionalCultures.Example.csproj" />
+    <ProjectReference Include="../plugins/implementation/skills/umbraco-nullable-reference-types/examples/approach-a-nullable-patterns/Umbraco-NullableReferenceTypes.Example.csproj" />
     <ProjectReference Include="../plugins/implementation/skills/umbraco-security-headers/examples/approach-a-middleware/Umbraco-SecurityHeaders.Example.csproj" />
     <ProjectReference Include="../plugins/implementation/skills/umbraco-notifications/examples/approach-a-handle-builtin/Umbraco-NotificationHandlers.Example.csproj" />
     <ProjectReference Include="../plugins/implementation/skills/umbraco-notifications/examples/approach-b-publish-custom/Umbraco-NotificationHandlers.ApproachB.Example.csproj" />
