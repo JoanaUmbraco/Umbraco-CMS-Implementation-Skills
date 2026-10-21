@@ -19,6 +19,7 @@
          reference instance referencing its example extensions). -->
     <ProjectReference Include="../plugins/implementation/skills/umbraco-sitemap/examples/approach-a-cached-controller/Umbraco-Sitemap.Example.csproj" />
     <ProjectReference Include="../plugins/implementation/skills/umbraco-custom-error-pages/examples/approach-a-content-finder/Umbraco-CustomErrorPages.Example.csproj" />
+    <ProjectReference Include="../plugins/implementation/skills/umbraco-configuration/examples/golden-configs/Umbraco-Configuration.Example.csproj" />
     <ProjectReference Include="../plugins/implementation/skills/umbraco-backoffice-localization/examples/approach-b-net-localization/Umbraco-BackofficeLocalization.NetLocalization.Example.csproj" />
     <ProjectReference Include="../plugins/implementation/skills/umbraco-services/examples/custom-service/Umbraco-Services.Example.csproj" />
     <ProjectReference Include="../plugins/implementation/skills/umbraco-composing/examples/approach-a-composer/Umbraco-Composing.Example.csproj" />
