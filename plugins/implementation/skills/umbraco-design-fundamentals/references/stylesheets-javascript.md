@@ -42,8 +42,26 @@ Add one `<script>` just before `</body>`:
   / JavaScript file.
 - **Added to the folder outside the backoffice:** they appear after ⋯ → Reload children on that
   folder.
-- **Bundling or minifying:** the docs don't cover a built-in option. Use the project's own front-end
-  build (npm, Vite, webpack, …) and reference its output files from `wwwroot`.
+
+## Minifying, bundling and cache busting
+
+Umbraco has nothing built in for these. They belong to however the project builds its front end, so
+follow the project's existing setup and don't add a package for them. Best practice is a front-end
+build (Vite, webpack, Rollup, …) that bundles, minifies and writes hashed file names
+(`site.3f2a1c.css`) into `wwwroot`; reference those output files from the layout.
+
+With no build step, add ASP.NET Core's `asp-append-version="true"` so the URL changes when the file
+does and browsers don't keep serving the old one after a deploy:
+
+```html
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+<script src="~/scripts/site.js" asp-append-version="true"></script>
+```
+
+It works for files under `wwwroot` and needs the MVC tag helpers, which the default
+`Views/_ViewImports.cshtml` imports. Docs:
+[Link Tag Helper](https://learn.microsoft.com/en-us/aspnet/core/mvc/views/tag-helpers/built-in/link-tag-helper) ·
+[Script Tag Helper](https://learn.microsoft.com/en-us/aspnet/core/mvc/views/tag-helpers/built-in/script-tag-helper)
 
 ## Rich Text Editor styles
 
@@ -56,7 +74,8 @@ layout for the front end.
 ## Steps
 
 1. Check for an existing `wwwroot/css`, `wwwroot/scripts` and a layout `<head>`.
-2. Add the files and reference them once, in the layout.
+2. Add the files and reference them once, in the layout (hashed build output, or
+   `asp-append-version="true"` when there's no build step).
 3. Build and run if possible. Otherwise say it wasn't verified.
 
 ## Done
