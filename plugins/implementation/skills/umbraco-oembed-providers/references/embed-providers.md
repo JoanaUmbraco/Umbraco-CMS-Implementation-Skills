@@ -5,8 +5,8 @@ C# providers that turn a URL pasted into the backoffice Embed dialog into embed 
 **Answer from this file and the matching asset(s).** Assets compile on 17.5.3 + 18.2.0 and are runtime-tested offline on 17.5.3. Fetch a doc below when you need an API or case not shown here; say if something stays unverified.
 
 Docs (v18 links; for v17 insert `/17.latest` after `/umbraco-cms`):
-[embedded-media-providers.md](https://docs.umbraco.com/umbraco-cms/extend-your-project/server-side-extensions/embedded-media-providers.md) ·
-[OEmbedProviderBase API](https://apidocs.umbraco.com/v18/csharp/api/Umbraco.Cms.Core.Media.EmbedProviders.OEmbedProviderBase.html)
+[embedded-media-providers.md](https://docs.umbraco.com/umbraco-cms/17.latest/extend-your-project/server-side-extensions/embedded-media-providers.md) ·
+[OEmbedProviderBase API](https://apidocs.umbraco.com/v17/csharp/api/Umbraco.Cms.Core.Media.EmbedProviders.OEmbedProviderBase.html)
 
 ## Choose the provider kind
 
