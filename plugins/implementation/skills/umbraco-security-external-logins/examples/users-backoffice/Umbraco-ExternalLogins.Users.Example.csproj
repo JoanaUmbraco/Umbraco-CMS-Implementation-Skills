@@ -4,8 +4,9 @@
     VALIDATION-ONLY example project for the umbraco-security-external-logins skill, users approach.
 
     Compiles the skill's assets/BackOfficeExternalLogin.cs, projected into obj/ at build time with
-    its placeholders substituted (see .generate.json), and embeds the projected umbraco-package.json
-    so ExampleHostWiring can serve it as a package manifest. The reference instance
+    its placeholders substituted (see .generate.json). The shared GenerateSkillAssets target in
+    plugins/Directory.Build.props also embeds the projected umbraco-package.json, under its bare file
+    name, so ExampleHostWiring can serve it as a package manifest. The reference instance
     (Umbraco-CMS.Skills) references this project, and ExternalLoginsUsersTests asserts the result
     over HTTP. Not shipped to users; not part of any plugin.
   -->
@@ -22,14 +23,5 @@
     <PackageReference Include="Umbraco.Cms.Api.Management" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
   </ItemGroup>
-
-  <!-- The shared GenerateSkillAssets target embeds only .cshtml and .xml. The manifest is JSON, so
-       it is embedded here, after generation, under its bare file name. -->
-  <Target Name="EmbedSkillManifest" AfterTargets="GenerateSkillAssets">
-    <ItemGroup>
-      <SkillManifestResource Include="$(IntermediateOutputPath)skill-assets/umbraco-package.json" />
-      <EmbeddedResource Include="@(SkillManifestResource)" LogicalName="umbraco-package.json" />
-    </ItemGroup>
-  </Target>
 
 </Project>

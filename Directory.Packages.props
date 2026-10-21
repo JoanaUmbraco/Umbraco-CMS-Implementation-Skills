@@ -29,6 +29,12 @@
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.10" />
   </ItemGroup>
 
+  <!-- Third-party packages a skill tells users to install, so its example compiles against them. -->
+  <ItemGroup>
+    <!-- umbraco-security-2fa: TOTP codes and QR generation. -->
+    <PackageVersion Include="GoogleAuthenticator" Version="3.2.0" />
+  </ItemGroup>
+
   <!-- Test hosts. -->
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
